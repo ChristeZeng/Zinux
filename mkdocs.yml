@@ -1,5 +1,5 @@
 site_name: 浙江大学21年秋操作系统实验 
-site_url: https://zjusec.gitee.io/os21fall-stu/
+site_url: https://zjusec.gitee.io/os21fall/
 theme:
   name: material
 nav:
