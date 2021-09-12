@@ -149,7 +149,7 @@ $ cat oslab.tar | docker import - oslab:2021
 # 查看docker镜像
 $ docker images
 REPOSITORY   TAG       IMAGE ID       CREATED        SIZE
-oslab        latest    b2b39a3bcd81   404 days ago   1.84GB
+oslab        latest    b2b39a3bcd81   404 days ago   3.62GB
 
 # 从镜像创建一个容器
 $ docker run --name oslab -it oslab:2021 bash   # --name:容器名称 -i:交互式操作 -t:终端
@@ -158,7 +158,7 @@ root@132a140bd724:/# exit (or CTRL+D)           # 从容器中退出 此时运�
 
 # 启动处于停止状态的容器
 $ docker start oslab        # oslab为容器名称
-$ docker p                 # 可看到容器已经启动
+$ docker ps                 # 可看到容器已经启动
 CONTAINER ID   IMAGE        COMMAND       CREATED              STATUS        PORTS     NAMES
 132a140bd724   oslab:2021   "bash"        About a minute ago   Up 1 second             oslab
 
