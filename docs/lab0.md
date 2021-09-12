@@ -125,11 +125,11 @@ GNU 调试器（英语：GNU Debugger，缩写：gdb）是一个由 GNU 开源�
 $ make help         # 查看make命令的各种参数解释
 
 $ make defconfig    # 使用当前平台的默认配置，在x86机器上会使用x86的默认配置
-$ make -j           # 编译当前平台的内核，-j 为以全部机器硬件线程数进行多线程编译
-$ make -j4          # 编译当前平台的内核，-j 为使用 4 线程进行多线程编译
+$ make -j$(nproc)   # 编译当前平台的内核，-j$(nproc) 为以全部机器硬件线程数进行多线程编译
+$ make -j4          # 编译当前平台的内核，-j4 为使用 4 线程进行多线程编译
 
-$ make ARCH=riscv defconfig                             # 使用 RISC-V 平台的默认配置
-$ make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- -j   # 编译 RISC-V 平台内核
+$ make ARCH=riscv defconfig                                     # 使用 RISC-V 平台的默认配置
+$ make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- -j$(nproc)   # 编译 RISC-V 平台内核
 
 $ make clean        # 清除所有编译好的 object 文件
 ```
@@ -186,8 +186,10 @@ rootfs.img  # 已经构建完成的根文件系统的镜像
 $ pwd
 path/to/lab0/linux
 $ make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- defconfig    # 生成配置
-$ make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- -j           # 编译
+$ make ARCH=riscv CROSS_COMPILE=riscv64-unknown-linux-gnu- -j$(nproc)   # 编译
 ```
+
+> 使用多线程编译一般会耗费大量内存，如果 `-j` 选项导致内存耗尽 (out of memory)，请尝试调低线程数，比如 `-j4`, `-j8` 等。
 
 ### 4.4 使用QEMU运行内核
 
@@ -200,7 +202,7 @@ $ qemu-system-riscv64 -nographic -machine virt -kernel path/to/linux/arch/riscv/
 
 ### 4.5 使用 GDB 对内核进行调试
 
-这一步需要开启两个 Terminal Session，一个 Terminal 使用 QEMU 启动 Linux，另一个 Terminal 使用 GDB 与 QEMU 远程通信进行调试。
+这一步需要开启两个 Terminal Session，一个 Terminal 使用 QEMU 启动 Linux，另一个 Terminal 使用 GDB 与 QEMU 远程通信（使用 tcp::1234 端口）进行调试。
 
 ```bash
 # Terminal 1
