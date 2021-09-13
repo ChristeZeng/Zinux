@@ -84,7 +84,7 @@ GNU 调试器（英语：GNU Debugger，缩写：gdb）是一个由 GNU 开源�
 #### GDB 基本命令介绍
 
 - (gdb) layout asm: 显示汇编代码
-- (gdb) start: 单步执行，运行程序，停在第一执行语句，简写 `s`
+- (gdb) start: 单步执行，运行程序，停在第一执行语句
 - (gdb) continue: 从断点后继续执行，简写 `c`
 - (gdb) next: 单步调试（逐过程，函数直接执行），简写 `n`
 - (gdb) step instruction: 执行单条指令，简写 `si`
@@ -140,7 +140,7 @@ $ make clean        # 清除所有编译好的 object 文件
 
 ### 4.1 搭建 Docker 环境
 
-请根据 **3.2 Docker 使用基础** 安装 Docker 环境。然后按照以下步骤导入我们已经准备好的 Docker 镜像：
+请根据 **3.2 Docker 使用基础** 安装 Docker 环境。然后**参考并理解**以下步骤，导入我们已经准备好的 Docker 镜像：
 
 ```bash
 # 导入docker镜像
