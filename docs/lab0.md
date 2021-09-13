@@ -140,7 +140,7 @@ $ make clean        # 清除所有编译好的 object 文件
 
 ### 4.1 搭建 Docker 环境
 
-请根据 **3.2 Docker 使用基础** 安装 Docker 环境。然后按照以下步骤导入我们已经准备好的 Docker 镜像：
+请根据 **3.2 Docker 使用基础** 安装 Docker 环境。然后**参考并理解**以下步骤，导入我们已经准备好的 Docker 镜像：
 
 ```bash
 # 导入docker镜像
