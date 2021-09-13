@@ -162,6 +162,9 @@ $ docker ps                 # 可看到容器已经启动
 CONTAINER ID   IMAGE        COMMAND       CREATED              STATUS        PORTS     NAMES
 132a140bd724   oslab:2021   "bash"        About a minute ago   Up 1 second             oslab
 
+# 从终端连入 docker 容器
+$ docker exec -it oslab bash
+
 # 挂载本地目录
 # 把用户的 home 目录映射到 docker 镜像内的 have-fun-debugging 目录
 $ docker run --name oslab -it -v ${HOME}:/have-fun-debugging oslab:2021 bash    # -v 本地目录:容器内目录
@@ -169,7 +172,9 @@ $ docker run --name oslab -it -v ${HOME}:/have-fun-debugging oslab:2021 bash    
 
 ### 4.2 获取 Linux 源码和已经编译好的文件系统
 
-从 [https://www.kernel.org](https://www.kernel.org) 下载最新的 Linux 源码。同时在 [repo](https://gitee.com/zjusec/os21fall) 中已经准备好了根文件系统的镜像。
+从 [https://www.kernel.org](https://www.kernel.org) 下载最新的 Linux 源码。
+
+并且使用 git 工具 clone [本仓库](https://gitee.com/zjusec/os21fall)。其中已经准备好了根文件系统的镜像。
 
 > 根文件系统为 Linux Kenrel 提供了基础的文件服务，在启动 Linux Kernel 时是必要的。
 
