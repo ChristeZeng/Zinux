@@ -30,7 +30,5 @@ INFO     -  [11:00:57] Serving on http://127.0.0.1:8000/os21fall/
 
 感谢以下各位老师和助教的辛勤付出！
 
-TODO 补充致谢
-
 [申文博](https://wenboshen.org/)、[周亚金](https://yajin.org/)、徐金焱、周侠、管章辉、张文龙、刘强、孙家栋、周天昱、庄阿得、王琨、沈韬立、王星宇、朱璟森、谢洵、[潘子曰](https://ziyuepan.tech/)、朱若凡、季高强、郭若容、杜云潇
 

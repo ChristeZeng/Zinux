@@ -2,9 +2,24 @@ site_name: 浙江大学21年秋操作系统实验
 site_url: https://zjusec.gitee.io/os21fall/
 theme:
   name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
 nav:
   - 实验指导零: lab0.md
+  # - 实验指导一: lab1.md
   - 常见问题及解答: faq.md
 markdown_extensions:
   - pymdownx.highlight
   - pymdownx.superfences
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
