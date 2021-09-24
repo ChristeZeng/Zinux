@@ -6,11 +6,7 @@
 #define csr_read(csr)                       \
 ({                                          \
     register uint64 __v;                    \
-
-
-    // unimplemented                        
-
-
+    /* unimplemented */                     \
     __v;                                    \
 })
 
