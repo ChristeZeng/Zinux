@@ -1,10 +1,7 @@
 # Lab 1: RV64 内核引导
 
 ## 1 实验目的
-1. 学习操作系统的引导过程
-2. 学习 RISC-V 汇编
-3. 学习 OpenSBI 的接口调用规则
-4. 学习 Makefile 使用与编写，掌握基本的 Makefile 命令
+学习 RISC-V 汇编， OpenSBI, 以及 Makefile相关知识，编写 head.S 实现跳转到内核运行的第一个 C 函数，调用 OpenSBI 接口完成字符的输出以及编写 Makefile 来完成对整个工程的管理。
 
 ## 2 实验环境
 
@@ -12,7 +9,7 @@ Docker in Lab0
 
 ## 3 实验基础知识介绍
 
-### 3.0 前置知识
+### 3.1 前置知识
 
 为了顺利完成 OS 实验，我们需要一些前置知识和较多调试技巧。在 OS 实验中我们需要 **RISC-V汇编** 的前置知识，课堂上不会讲授，请同学们通过阅读以下四份文档自学：
 
@@ -23,7 +20,7 @@ Docker in Lab0
 
 > 注：RISC-V 手册（中文）中有一些 Typo，请谨慎参考。
 
-### 3.1 RISC-V 的三种特权模式
+### 3.2 RISC-V 的三种特权模式
 
 RISC-V 有三个特权模式：U (user) 模式、S (supervisor) 模式和 M (machine) 模式。
 
@@ -40,7 +37,7 @@ RISC-V 有三个特权模式：U (user) 模式、S (supervisor) 模式和 M (mac
 - S 模式介于 M 模式和 U 模式之间，在操作系统中对应于内核态 (Kernel)。当用户需要内核资源时，向内核申请，并切换到内核态进行处理
 - U 模式用于执行用户程序，在操作系统中对应于用户态，有**最低**级别的权限
 
-### 3.2 从计算机上电到 OS 运行
+### 3.3 从计算机上电到 OS 运行
 
 我们以最基础的嵌入式系统为例，计算机上电后，首先硬件进行一些基础的初始化后，将 CPU 的 Program Counter 移动到内存中 Bootloader 的起始地址。
 Bootloader 是操作系统内核运行之前，用于初始化硬件，加载操作系统内核。
@@ -55,7 +52,7 @@ Bootloader 是操作系统内核运行之前，用于初始化硬件，加载操
 +------------+         +--------------+         +----------+
 ```
 
-### 3.3 SBI 与 OpenSBI
+### 3.4 SBI 与 OpenSBI
 
 SBI (Supervisor Binary Interface) 是 S-mode 的 Kernel 和 M-mode 执行环境之间的接口规范，而 OpenSBI 是一个 RISC-V SBI 规范的开源实现。RISC-V 平台和 SoC 供应商可以自主扩展 OpenSBI 实现，以适应特定的硬件配置。
 
@@ -69,11 +66,11 @@ SBI (Supervisor Binary Interface) 是 S-mode 的 Kernel 和 M-mode 执行环境�
 
 如果你对 RISC-V 架构的 Boot 流程有更多的好奇，可以参考这份 [bootflow](https://riscv.org/wp-content/uploads/2019/12/Summit_bootflow.pdf)。
 
-### 3.4 Makefile
+### 3.5 Makefile
 
 Makefile 可以简单的认为是一个工程文件的编译规则，描述了整个工程的编译和链接流程。在 Lab0 中我们已经使用了 make 工具利用 Makefile 文件来管理整个工程。在阅读了 [Makefile介绍](https://seisman.github.io/how-to-write-makefile/introduction.html) 这一章节后，同学们可以根据工程文件夹里 Makefile 的代码来掌握一些基本的使用技巧。
 
-### 3.5 内联汇编
+### 3.6 内联汇编
 内联汇编（通常由 asm 或者 \_\_asm\_\_ 关键字引入）提供了将汇编语言源代码嵌入 C 程序的能力。
 内联汇编的详细介绍请参考 [Assembler Instructions with C Expression Operands](https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html) 。
 下面简要介绍一下这次实验会用到的一些内联汇编知识：
@@ -140,7 +137,7 @@ unsigned long long s_example(unsigned long long type,unsigned long long arg0) {
     __asm__ volatile ("csrw " "sstatus" ", %0" :: "r"(val)); })
 ```
 
-### 3.6 编译相关知识介绍
+### 3.7 编译相关知识介绍
 #### vmlinux.lds
 
 GNU ld 即链接器，用于将 `*.o` 文件（和库文件）链接成可执行文件。在操作系统开发中，为了指定程序的内存布局，ld 使用链接脚本（Linker Script）来控制，在 Linux Kernel 中链接脚本被命名为 vmlinux.lds。更多关于 ld 的介绍可以使用 `man ld` 命令。
@@ -252,39 +249,6 @@ ffffffe000000190 t debug_kernel
 
 使用 System.map 可以方便地读出函数或变量的地址，为 Debug 提供了方便。
 
-
-### 3.8 OpenSBI 的接口的使用方式
-
-OpenSBI 在 M 态，为 S 态提供了多种接口，比如字符串输入输出。因此我们需要实现调用 OpenSBI 接口的功能。给出函数定义如下：
-```c
-struct sbiret {
-	long error;
-	long value;
-};
-
-struct sbiret sbi_ecall(int ext, int fid, 
-                    uint64 arg0, uint64 arg1, uint64 arg2,
-                    uint64 arg3, uint64 arg4, uint64 arg5);
-```
-
-sbi_ecall 函数中，需要完成以下内容：
-
-1. 将 ext (Extension ID) 放入寄存器 a7 中，fid (Function ID) 放入寄存器 a6 中，将 arg0 ~ arg5 放入寄存器 a0 ~ a5 中。
-2. 使用 `ecall` 指令。`ecall` 之后系统会进入 M 模式，之后 OpenSBI 会完成相关操作。
-3. OpenSBI 的返回结果会放到寄存器 a0 ， a1 中，其中 a0 为 error code， a1 为返回值， 我们用 sbiret 来接受这两个返回值。
-
-同学们可以参照内联汇编的示例一完成该函数的编写。
-编写成功后，调用 `sbi_ecall(0x1, 0x0， 0x30, 0, 0， 0， 0， 0)` 将会输出字符'0'。其中`0x1`代表 `sbi_console_putchar` 的 ExtensionID，`0x0`代表FunctionID, 0x30代表'0'的ascii值，其余参数填0。
-
-下面列出了一些在后续的实验中可能需要使用的功能。
-
-|Function Name | Function ID | Extension ID |
-|---|---|---|
-|sbi_set_timer （设置时钟相关寄存器） |0|0x00| 
-|sbi_console_putchar （打印字符）|0|0x01| 
-|sbi_console_getchar （接收字符）|0|0x02| 
-|sbi_shutdown （关机）|0|0x08| 
-
 ## 4 实验步骤
 
 ### 4.1 准备工程
@@ -332,37 +296,59 @@ sbi_ecall 函数中，需要完成以下内容：
 
 ### 4.3 完善 Makefile 脚本
 
-阅读文档中关于 [Makefile](#34-makefile) 的章节，以及工程文件中的 Makefile 文件，根据注释学会 Makefiel 的使用规则后，补充 `lib/Makefile`，使工程得以编译。  
+阅读文档中关于 [Makefile](#35-makefile) 的章节，以及工程文件中的 Makefile 文件，根据注释学会 Makefiel 的使用规则后，补充 `lib/Makefile`，使工程得以编译。  
 
 完成此步后在工程根文件夹执行 make，可以看到工程成功编译出 vmlinux。
 
-
 ### 4.4 补充 `sbi.c`
 
-学习了解完汇编与内联汇编后，请在 `arch/riscv/kernel/sbi.c` 中补充 `sbi_ecall()`。
+OpenSBI 在 M 态，为 S 态提供了多种接口，比如字符串输入输出。因此我们需要实现调用 OpenSBI 接口的功能。给出函数定义如下：
+```c
+struct sbiret {
+	long error;
+	long value;
+};
 
-下面是实验指导中一些有用的信息：
+struct sbiret sbi_ecall(int ext, int fid, 
+                    uint64 arg0, uint64 arg1, uint64 arg2,
+                    uint64 arg3, uint64 arg4, uint64 arg5);
+```
 
-- [接口规范](#38-opensbi)
-- [内联示例](#_1)
+sbi_ecall 函数中，需要完成以下内容：
 
-完成 `sbi_ecall()` 后请尝试使用 `sbi_ecall()` 打印单个字符，成功后进行下一步实验。
+1. 将 ext (Extension ID) 放入寄存器 a7 中，fid (Function ID) 放入寄存器 a6 中，将 arg0 ~ arg5 放入寄存器 a0 ~ a5 中。
+2. 使用 `ecall` 指令。`ecall` 之后系统会进入 M 模式，之后 OpenSBI 会完成相关操作。
+3. OpenSBI 的返回结果会存放在寄存器 a0 ， a1 中，其中 a0 为 error code， a1 为返回值， 我们用 sbiret 来接受这两个返回值。
+
+同学们可以参照内联汇编的示例一完成该函数的编写。
+编写成功后，调用 `sbi_ecall(0x1, 0x0， 0x30, 0, 0， 0， 0， 0)` 将会输出字符'0'。其中`0x1`代表 `sbi_console_putchar` 的 ExtensionID，`0x0`代表FunctionID, 0x30代表'0'的ascii值，其余参数填0。
+
+请在 `arch/riscv/kernel/sbi.c` 中补充 `sbi_ecall()`。
+
+下面列出了一些在后续的实验中可能需要使用的功能。
+
+|Function Name | Function ID | Extension ID |
+|---|---|---|
+|sbi_set_timer （设置时钟相关寄存器） |0|0x00| 
+|sbi_console_putchar （打印字符）|0|0x01| 
+|sbi_console_getchar （接收字符）|0|0x02| 
+|sbi_shutdown （关机）|0|0x08| 下面是实验指导中一些有用的信息：
+
+
 
 ### 4.5 `puts()` 和 `puti()`
-
+调用以上完成的 `sbi_ecall` , 完成 `puts()` 和 `puti()` 的实现。
 `puts()` 用于打印字符串，`puti()` 用于打印整型变量。
 
-请编写 `lib/print.c` 中的 `puts()` 和 `puti()`。函数的相关定义已经写在了 `print.h` 文件。
+请编写 `lib/print.c` 中的 `puts()` 和 `puti()`， 函数的相关定义已经写在了 `print.h` 文件。
 
 ### 4.6 修改 defs
 
-内联汇编的相关知识见[内联汇编](#35)。  
+内联汇编的相关知识见[内联汇编](#36)。 
 
 学习了解了以上知识后，补充 `arch/riscv/include/defs.h` 中的代码完成：
 
-补充完 `read_csr` 这个宏定义。这里有相关[示例](#_2)。这一步骤未完成不影响本次实验。
-
-> 但可能会影响接下来的一些试验。
+补充完 `read_csr` 这个宏定义。这里有相关[示例](#_2)。
 
 
 ## 思考题
