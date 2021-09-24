@@ -15,7 +15,7 @@ theme:
         name: Switch to light mode
 nav:
   - 实验指导零: lab0.md
-  # - 实验指导一: lab1.md
+  - 实验指导一: lab1.md
   - 常见问题及解答: faq.md
 markdown_extensions:
   - pymdownx.highlight
