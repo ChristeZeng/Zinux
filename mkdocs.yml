@@ -15,6 +15,8 @@ theme:
       toggle:
         icon: material/toggle-switch
         name: Switch to light mode
+  features:
+    - navigation.top
 nav:
   - 实验指导零: lab0.md
   - 实验指导一: lab1.md
