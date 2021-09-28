@@ -2,7 +2,7 @@
 #include "sbi.h"
 
 void puts(char *s) {
-    while(*s)
+    while(s)
     {
         sbi_ecall(0x1, 0x0, *s, 0, 0, 0, 0, 0);
         s++;
@@ -20,5 +20,5 @@ void puti(int x) {
         x /= 10;
     }
     for(int i = cnt - 1; i >= 0; i--)
-        sbi_ecall(0x1, 0x0, bit[i]+'0', 0, 0, 0, 0, 0);
+        sbi_ecall(0x1, 0x0, bit[i] + '0', 0, 0, 0, 0, 0);
 }

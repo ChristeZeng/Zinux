@@ -5,14 +5,12 @@
 _start:
     # ------------------
     # - your code here -
-    la sp, .bss.stack
-    j start_kernel
     # ------------------
 
     .section .bss.stack
     .globl boot_stack
 boot_stack:
-    .space 0x1000 # <-- change to your stack size
+    .space XYZ # <-- change to your stack size
 
     .globl boot_stack_top
 boot_stack_top:
