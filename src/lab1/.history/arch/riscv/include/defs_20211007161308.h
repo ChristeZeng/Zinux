@@ -7,8 +7,7 @@
 ({                                          \
     register uint64 __v;                    \
     asm volatile ("csrr %0, " #csr          \
-                    : "=r"(__v) :           \
-                    : "memory"   );         \
+                    : "=r"(__v) :);         \
     __v;                                    \
 })
 
