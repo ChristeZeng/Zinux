@@ -46,7 +46,7 @@ SECTIONS
         _sbss = .;
 
         *(.bss.stack)
-        sbss = .;
+        *(.sbss .sbss.*)
         *(.bss .bss.*)
         
         _ebss = .;
