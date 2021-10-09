@@ -4,7 +4,6 @@
 * 学习 RISC-V 汇编， 编写 head.S 实现跳转到内核运行的第一个 C 函数。
 * 学习 OpenSBI，理解 OpenSBI 在实验中所起到的作用，并调用 OpenSBI 提供的接口完成字符的输出。
 * 学习 Makefile 相关知识， 补充项目中的 Makefile 文件， 来完成对整个工程的管理。
-
 ## 2 实验环境
 
 Docker in Lab0
