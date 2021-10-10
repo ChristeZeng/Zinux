@@ -356,3 +356,6 @@ sbi_ecall 函数中，需要完成以下内容：
 
 1. 请总结一下 RISC-V 的 calling convention，并解释 Caller / Callee Saved Register 有什么区别？
 2. 编译之后，通过 System.map 查看 vmlinux.lds 中自定义符号的值
+
+## 作业提交。
+同学需要提交实验报告以及整个工程代码。在提交前请使用 `make clean` 清除所有构建产物。

@@ -319,3 +319,6 @@ kernel is running!
     ......
     ```
     通过查看 `RISC-V Privileged Spec` 中的 `medeleg` 和 `mideleg` 解释上面 `MIDELEG` 值的含义。
+
+## 作业提交。
+同学需要提交实验报告以及整个工程代码。在提交前请使用 `make clean` 清除所有构建产物。
