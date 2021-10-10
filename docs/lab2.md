@@ -207,7 +207,7 @@ _start:
 ```asm
     .section .text.entry
     .align 2
-    .globl _trap  
+    .globl _traps 
 _traps:
     # YOUR CODE HERE
     # -----------
