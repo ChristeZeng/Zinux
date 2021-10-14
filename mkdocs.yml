@@ -20,9 +20,15 @@ theme:
 nav:
   - 实验指导零: lab0.md
   - 实验指导一: lab1.md
+  - 实验指导二: lab2.md
+  # - 实验指导二: lab2.md
   - 常见问题及解答: faq.md
 markdown_extensions:
-  - pymdownx.highlight
+  - attr_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.highlight:
+      linenums: true
   - pymdownx.superfences
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji

@@ -1,8 +1,9 @@
 # Lab 1: RV64 内核引导
 
 ## 1 实验目的
-学习 RISC-V 汇编， OpenSBI, 以及 Makefile相关知识，编写 head.S 实现跳转到内核运行的第一个 C 函数，调用 OpenSBI 接口完成字符的输出以及编写 Makefile 来完成对整个工程的管理。
-
+* 学习 RISC-V 汇编， 编写 head.S 实现跳转到内核运行的第一个 C 函数。
+* 学习 OpenSBI，理解 OpenSBI 在实验中所起到的作用，并调用 OpenSBI 提供的接口完成字符的输出。
+* 学习 Makefile 相关知识， 补充项目中的 Makefile 文件， 来完成对整个工程的管理。
 ## 2 实验环境
 
 Docker in Lab0
@@ -355,3 +356,6 @@ sbi_ecall 函数中，需要完成以下内容：
 
 1. 请总结一下 RISC-V 的 calling convention，并解释 Caller / Callee Saved Register 有什么区别？
 2. 编译之后，通过 System.map 查看 vmlinux.lds 中自定义符号的值
+
+## 作业提交
+同学需要提交实验报告以及整个工程代码。在提交前请使用 `make clean` 清除所有构建产物。
