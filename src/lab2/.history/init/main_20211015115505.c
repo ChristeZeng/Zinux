@@ -4,7 +4,7 @@
 extern void test();
 
 int start_kernel() {
-    printk("%d", 2021);
+    puti(2021);
     printk(" Hello RISC-V\n");
 
     test(); // DO NOT DELETE !!!

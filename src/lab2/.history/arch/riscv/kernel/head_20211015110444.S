@@ -13,16 +13,11 @@ _start:
 
     #set first time interrupt
     li t1, 10000000
-    rdtime t0
+    rd t0
     add t2, t0, t1
-    mv a0, t2
+    li a0, 0
     li a1, 0
-    li a2, 0
-    li a3, 0
-    li a4, 0
-    li a5, 0
-    li a6, 0
-    li a7, 0
+    mv a2, t2
     ecall
     #set sstatus[SIE] = 1
     li t0, 0x2

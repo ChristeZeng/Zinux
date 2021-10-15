@@ -1,0 +1,18 @@
+.extern start_kernel
+
+    .section .text.init
+    .globl _start
+_start:
+    # ------------------
+    # - your code here -
+    la sp, boot_stack_top
+    j start_kernel
+    # ------------------
+
+    .section .bss.stack
+    .globl boot_stack
+boot_stack:
+    .space 0x1000 # <-- change to your stack size
+
+    .globl boot_stack_top
+boot_stack_top:
