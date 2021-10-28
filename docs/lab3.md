@@ -210,7 +210,7 @@ void dummy();
         // 2. 设置 state 为 TASK_RUNNING;
         // 3. 由于 idle 不参与调度 可以将其 counter / priority 设置为 0
         // 4. 设置 idle 的 pid 为 0
-        // 5. 将 current 和 taks[0] 指向 idle
+        // 5. 将 current 和 task[0] 指向 idle
 
         /* YOUR CODE HERE */
 
