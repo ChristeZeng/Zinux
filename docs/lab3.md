@@ -1,4 +1,4 @@
-# 实验 3：RISC-V64内核线程调度 
+# Lab 3：RV64 内核线程调度
 
 ## 1 实验目的
 * 了解线程概念，并学习线程相关结构体，并实现线程的初始化功能。
@@ -76,7 +76,7 @@
 * 在进程调度时，操作系统会遍历所有可运行的线程，按照一定的调度算法选出下一个执行的线程。最终将选择得到的线程与当前线程切换。
 * 在切换的过程中，首先我们需要保存当前线程的执行上下文，再将将要执行线程的上下文载入到相关寄存器中，至此我们就完成了线程的调度与切换。
 
-## 4 实验步骤 
+## 4 实验步骤
 
 ### 4.1 准备工程
 * 此次实验基于 lab2 同学所实现的代码进行。
@@ -99,7 +99,7 @@
 * 在 lab3 中我们需要一些物理内存管理的接口，在此我们提供了 `kalloc` 接口 ( 见`mm.c` ) 给同学。同学可以用 `kalloc` 来申请 4KB 的物理页。由于引入了简单的物理内存管理，需要在 `_start` 的适当位置调用`mm_init`, 来初始化内存管理系统，并且在初始化时需要用一些自定义的宏，需要修改 `defs.h`, 在 `defs.h` `添加` 如下内容：
     ```c++
     #define PHY_START 0x0000000080000000
-    #define PHY_SIZE  128 * 1024 * 1024 // 128MB， QEMU 默认内存大小 
+    #define PHY_SIZE  128 * 1024 * 1024 // 128MB， QEMU 默认内存大小
     #define PHY_END   (PHY_START + PHY_SIZE)
 
     #define PGSIZE 0x1000 // 4KB
@@ -110,7 +110,7 @@
 * 在 lab3 中需要同学需要添加并修改 `arch/riscv/include/proc.h` `arch/riscv/kernel/proc.c` 两个文件。
 * 本次实验需要实现两种不同的调度算法， 如何控制代码逻辑见 `4.4`
 
-### 4.2 `proc.h` 数据结构定义   
+### 4.2 `proc.h` 数据结构定义
 ```c++
 // arch/riscv/include/proc.h
 
@@ -141,15 +141,15 @@ struct thread_struct {
 struct task_struct {
     struct thread_info* thread_info;
     uint64 state;    // 线程状态
-    uint64 counter;  // 运行剩余时间 
+    uint64 counter;  // 运行剩余时间
     uint64 priority; // 运行优先级 1最低 10最高
     uint64 pid;      // 线程id
 
     struct thread_struct thread;
 };
 
-/* 线程初始化 创建 NR_TASKS 个线程 */ 
-void task_init(); 
+/* 线程初始化 创建 NR_TASKS 个线程 */
+void task_init();
 
 /* 在时钟中断处理中被调用 用于判断是否需要进行调度 */
 void do_timer();
@@ -216,7 +216,7 @@ void dummy();
 
         // 1. 参考 idle 的设置, 为 task[1] ~ task[NR_TASKS - 1] 进行初始化
         // 2. 其中每个线程的 state 为 TASK_RUNNING, counter 为 0, priority 使用 rand() 来设置, pid 为该线程在线程数组中的下标。
-        // 3. 为 task[1] ~ task[NR_TASKS - 1] 设置 `thread_struct` 中的 `ra` 和 `sp`, 
+        // 3. 为 task[1] ~ task[NR_TASKS - 1] 设置 `thread_struct` 中的 `ra` 和 `sp`,
         // 4. 其中 `ra` 设置为 __dummy （见 4.3.2）的地址， `sp` 设置为 该线程申请的物理页的高地址
 
         /* YOUR CODE HERE */
@@ -225,7 +225,7 @@ void dummy();
     }
     ```
 > Debug 提示：
-> 
+>
 > 1. 修改 `proc.h` 中的 `NR_TASKS` 为一个比较小的值, 比如 5， 这样 除去 `task[0]` ( idle )，只需要初始化 4 个线程，方便调试。
 > 2. 注意以上的修改只是为了在做实验的过程中方便调试，最后一定记住要修改回去！！！
 
@@ -242,7 +242,7 @@ void dummy();
             if (last_counter == -1 || current->counter != last_counter) {
                 last_counter = current->counter;
                 auto_inc_local_var = (auto_inc_local_var + 1) % MOD;
-                printk("[PID = %d] is running. auto_inc_local_var = %d\n", current->pid, auto_inc_local_var); 
+                printk("[PID = %d] is running. auto_inc_local_var = %d\n", current->pid, auto_inc_local_var);
             }
         }
     }
@@ -284,7 +284,7 @@ void dummy();
     __switch_to:
         # save state to prev process
         # YOUR CODE HERE
-        
+
         # restore state from next process
         # YOUR CODE HERE
 
@@ -304,7 +304,7 @@ void dummy();
         /* YOUR CODE HERE */
     }
     ```
-        
+
 #### 4.3.5 实现线程调度
 
 本次实验我们需要实现两种调度算法：1.短作业优先调度算法，2.优先级调度算法。
@@ -344,22 +344,22 @@ void dummy();
 - 短作业优先调度输出示例 (为了便于展示，这里一共只初始化了 4 个线程) 同学们最后提交时需要 保证 NR_TASKS 为 32 不变
     ```bash
     OpenSBI v0.9
-      ____                    _____ ____ _____ 
+      ____                    _____ ____ _____
      / __ \                  / ____|  _ \_   _|
-    | |  | |_ __   ___ _ __ | (___ | |_) || |  
-    | |  | | '_ \ / _ \ '_ \ \___ \|  _ < | |  
-    | |__| | |_) |  __/ | | |____) | |_) || |_ 
+    | |  | |_ __   ___ _ __ | (___ | |_) || |
+    | |  | | '_ \ / _ \ '_ \ \___ \|  _ < | |
+    | |__| | |_) |  __/ | | |____) | |_) || |_
      \____/| .__/ \___|_| |_|_____/|____/_____|
-           | |                                 
-           |_|                                 
-                                                    
+           | |
+           |_|
+
     ...
 
     Boot HART MIDELEG         : 0x0000000000000222
     Boot HART MEDELEG         : 0x000000000000b109
-                        
+
     ...mm_init done!
-    ...proc_init done!                                                                               
+    ...proc_init done!
     Hello RISC-V
     idle process is running!
 
@@ -368,21 +368,21 @@ void dummy();
     SET [PID = 3 COUNTER = 5]
     SET [PID = 4 COUNTER = 2]
 
-    switch to [PID = 4 COUNTER = 2] 
+    switch to [PID = 4 COUNTER = 2]
     [PID = 4] is running. auto_inc_local_var = 1
     [PID = 4] is running. auto_inc_local_var = 2
-    
-    switch to [PID = 3 COUNTER = 5] 
+
+    switch to [PID = 3 COUNTER = 5]
     [PID = 3] is running. auto_inc_local_var = 1
     .....
     [PID = 3] is running. auto_inc_local_var = 5
-    
-    switch to [PID = 2 COUNTER = 10] 
+
+    switch to [PID = 2 COUNTER = 10]
     [PID = 2] is running. auto_inc_local_var = 1
     ...
     [PID = 2] is running. auto_inc_local_var = 10
-    
-    switch to [PID = 1 COUNTER = 10] 
+
+    switch to [PID = 1 COUNTER = 10]
     [PID = 1] is running. auto_inc_local_var = 1
     ...
     [PID = 1] is running. auto_inc_local_var = 10
@@ -391,8 +391,8 @@ void dummy();
     SET [PID = 2 COUNTER = 4]
     SET [PID = 3 COUNTER = 4]
     SET [PID = 4 COUNTER = 10]
-    
-    switch to [PID = 3 COUNTER = 4] 
+
+    switch to [PID = 3 COUNTER = 4]
     [PID = 3] is running. auto_inc_local_var = 6
     ...
     [PID = 3] is running. auto_inc_local_var = 9
@@ -401,46 +401,46 @@ void dummy();
 - 优先级调度输出示例
     ```bash
     OpenSBI v0.9
-      ____                    _____ ____ _____ 
+      ____                    _____ ____ _____
      / __ \                  / ____|  _ \_   _|
-    | |  | |_ __   ___ _ __ | (___ | |_) || |  
-    | |  | | '_ \ / _ \ '_ \ \___ \|  _ < | |  
-    | |__| | |_) |  __/ | | |____) | |_) || |_ 
+    | |  | |_ __   ___ _ __ | (___ | |_) || |
+    | |  | | '_ \ / _ \ '_ \ \___ \|  _ < | |
+    | |__| | |_) |  __/ | | |____) | |_) || |_
      \____/| .__/ \___|_| |_|_____/|____/_____|
-           | |                                 
-           |_|                                 
-                                                    
+           | |
+           |_|
+
     ...
 
     Boot HART MIDELEG         : 0x0000000000000222
     Boot HART MEDELEG         : 0x000000000000b109
-                        
+
     ...mm_init done!
-    ...proc_init done!                                                                               
+    ...proc_init done!
     Hello RISC-V
     idle process is running!
 
-    SET [PID = 1 PRIORITY = 1 COUNTER = 1]                                                       
-    SET [PID = 2 PRIORITY = 4 COUNTER = 4]        
-    SET [PID = 3 PRIORITY = 10 COUNTER = 10]                                                       
+    SET [PID = 1 PRIORITY = 1 COUNTER = 1]
+    SET [PID = 2 PRIORITY = 4 COUNTER = 4]
+    SET [PID = 3 PRIORITY = 10 COUNTER = 10]
     SET [PID = 4 PRIORITY = 4 COUNTER = 4]
-    
-    switch to [PID = 3 PRIORITY = 10 COUNTER = 10]                                                   
-    [PID = 3] is running. auto_inc_local_var = 1                                                     
+
+    switch to [PID = 3 PRIORITY = 10 COUNTER = 10]
+    [PID = 3] is running. auto_inc_local_var = 1
     ...
     [PID = 3] is running. auto_inc_local_var = 10
 
-    switch to [PID = 4 PRIORITY = 4 COUNTER = 4] 
+    switch to [PID = 4 PRIORITY = 4 COUNTER = 4]
     [PID = 4] is running. auto_inc_local_var = 1
     ...
     [PID = 4] is running. auto_inc_local_var = 4
-    
-    switch to [PID = 2 PRIORITY = 4 COUNTER = 4] 
+
+    switch to [PID = 2 PRIORITY = 4 COUNTER = 4]
     [PID = 2] is running. auto_inc_local_var = 1
     ...
     [PID = 2] is running. auto_inc_local_var = 4
-    
-    switch to [PID = 1 PRIORITY = 1 COUNTER = 1] 
+
+    switch to [PID = 1 PRIORITY = 1 COUNTER = 1]
     [PID = 1] is running. auto_inc_local_var = 1
 
     SET [PID = 1 PRIORITY = 1 COUNTER = 1]
@@ -448,7 +448,7 @@ void dummy();
     SET [PID = 3 PRIORITY = 10 COUNTER = 10]
     SET [PID = 4 PRIORITY = 4 COUNTER = 4]
 
-    switch to [PID = 3 PRIORITY = 10 COUNTER = 10] 
+    switch to [PID = 3 PRIORITY = 10 COUNTER = 10]
     [PID = 3] is running. auto_inc_local_var = 11
     ...
     ```
