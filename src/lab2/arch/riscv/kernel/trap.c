@@ -1,5 +1,6 @@
 // trap.c 
 #include "printk.h"
+#include "clock.h"
 
 void trap_handler(unsigned long scause, unsigned long sepc) {
     // 通过 `scause` 判断trap类型
