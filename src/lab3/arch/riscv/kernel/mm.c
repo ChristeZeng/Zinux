@@ -37,7 +37,7 @@ void kfree(uint64 addr) {
 
 void kfreerange(char *start, char *end) {
     char *addr = (char *)PGROUNDUP((uint64)start);
-    for (; (uint64)(addr) + PGSIZE <= PHY_END; addr += PGSIZE) {
+    for (; (uint64)(addr) + PGSIZE <= (uint64)end; addr += PGSIZE) {
         kfree((uint64)addr);
     }
 }
