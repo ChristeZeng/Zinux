@@ -297,7 +297,7 @@ ffffffe000000190 t debug_kernel
 
 ### 4.3 完善 Makefile 脚本
 
-阅读文档中关于 [Makefile](#35-makefile) 的章节，以及工程文件中的 Makefile 文件，根据注释学会 Makefiel 的使用规则后，补充 `lib/Makefile`，使工程得以编译。  
+阅读文档中关于 [Makefile](#35-makefile) 的章节，以及工程文件中的 Makefile 文件，根据注释学会 Makefile 的使用规则后，补充 `lib/Makefile`，使工程得以编译。  
 
 完成此步后在工程根文件夹执行 make，可以看到工程成功编译出 vmlinux。
 
