@@ -27,8 +27,9 @@ _start:
     #set sstatus[SIE] = 1
     li t0, 0x2
     csrw sstatus, t0
-
+    
     # ------------------
+    # - your code here -
     la sp, boot_stack_top
     call mm_init
     call task_init

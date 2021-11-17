@@ -49,6 +49,7 @@ void task_init() {
 }
 
 void dummy() {
+    //printk("dummy\n");
     uint64 MOD = 1000000007;
     uint64 auto_inc_local_var = 0;
     int last_counter = -1;

@@ -43,12 +43,14 @@ void task_init() {
         task[i]->pid = i;
         task[i]->thread.ra = (uint64)__dummy;
         task[i]->thread.sp = (uint64)task[i] + PGSIZE - 1; 
+        printk("%x %x", (uint64)task[i] + PGSIZE - 1, task[i] + PGSIZE - 1);
     }
 
     printk("...proc_init done!\n");
 }
 
 void dummy() {
+    //printk("dummy\n");
     uint64 MOD = 1000000007;
     uint64 auto_inc_local_var = 0;
     int last_counter = -1;

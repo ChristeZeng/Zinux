@@ -42,13 +42,14 @@ void task_init() {
         task[i]->priority = rand();
         task[i]->pid = i;
         task[i]->thread.ra = (uint64)__dummy;
-        task[i]->thread.sp = (uint64)task[i] + PGSIZE - 1; 
+        task[i]->thread.sp = (uint64)task[i] + PGSIZE; //?
     }
 
     printk("...proc_init done!\n");
 }
 
 void dummy() {
+    printk("dummy\n");
     uint64 MOD = 1000000007;
     uint64 auto_inc_local_var = 0;
     int last_counter = -1;
@@ -62,7 +63,7 @@ void dummy() {
 }
 
 void switch_to(struct task_struct* next) {
-    //printk("switch_to\n");
+    printk("switch_to\n");
     /* YOUR CODE HERE */
     if(current == next)
         return;
@@ -79,7 +80,7 @@ void do_timer(void) {
           若剩余时间任然大于0 则直接返回 否则进行调度 */
 
     /* YOUR CODE HERE */
-    //printk("do_timer\n");
+    printk("do_timer\n");
     if(current == idle)
         schedule();
     else {
@@ -135,7 +136,7 @@ void schedule(void) {
         max_pri = 0;
 
         for(int i = 1; i <= NR_TASKS - 1; i++) {
-            if(task[i] && task[i]->state == TASK_RUNNING && task[i]->priority > max_pri && task[i]->counter > 0) {
+            if(task[i]->state == TASK_RUNNING && task[i]->priority > max_pri && task[i]->counter > 0) {
                 max_pri = task[i]->priority;
                 index_to_switch = i;
                 isallzero = 0;

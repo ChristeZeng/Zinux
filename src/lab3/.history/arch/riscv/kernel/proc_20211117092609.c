@@ -43,12 +43,16 @@ void task_init() {
         task[i]->pid = i;
         task[i]->thread.ra = (uint64)__dummy;
         task[i]->thread.sp = (uint64)task[i] + PGSIZE - 1; 
+        printk("申请到的物理页首地址 = %x\n", PGROUNDDOWN((uint64)task[i]));
+        printk("强制类型转化后 = %x\n", (uint64)task[i] + PGSIZE - 1);
+        printk("强制类型转化前 = %x\n", task[i] + PGSIZE - 1);
     }
 
     printk("...proc_init done!\n");
 }
 
 void dummy() {
+    //printk("dummy\n");
     uint64 MOD = 1000000007;
     uint64 auto_inc_local_var = 0;
     int last_counter = -1;
