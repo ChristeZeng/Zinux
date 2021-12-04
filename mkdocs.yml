@@ -23,6 +23,7 @@ nav:
   - 实验指导二: lab2.md
   - 实验指导三: lab3.md
   - 实验指导四: lab4.md
+  - 实验指导五: lab5.md
   - 常见问题及解答: faq.md
 markdown_extensions:
   - attr_list
