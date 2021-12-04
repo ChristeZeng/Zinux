@@ -38,6 +38,32 @@ void setup_vm(void) {
 /* swapper_pg_dir: kernel pagetable 根目录， 在 setup_vm_final 进行映射。 */
 unsigned long  swapper_pg_dir[512] __attribute__((__aligned__(0x1000)));
 
+uint64 read_piece(uint64 n, int left, int right) {
+	uint64 res;
+	res = (n << (63 - left)) >> (63 + right - left);
+	return res;
+}
+
+uint64 write_piece(uint64 n, uint64 content, int left, int right) {
+	int i;
+	// clear
+	for (i = right; i <= left; i++) {
+		n &= ~(1 << i);
+	}
+	// set
+	n |= content << right;
+	return n;
+}
+
+uint64 read_mem(uint64 *p) {
+	return (uint64)(*p);
+}
+
+void write_mem(uint64 *p, uint64 val) {
+	*p = val;
+	return;
+}
+
 /* 创建多级页表映射关系 */
 void create_mapping(uint64 *pgtbl, uint64 va, uint64 pa, uint64 sz, int perm) {
     /*
@@ -93,7 +119,8 @@ void create_mapping(uint64 *pgtbl, uint64 va, uint64 pa, uint64 sz, int perm) {
 
         //printk("\nThird Page\n");
         uint64 tpa = ((spte & 0x003FFFFFFFFFFFC00) << 2) + (vpn0 << 3) + PA2VA_OFFSET;
-        uint64 tpte = ((curpa & 0x00FFFFFFFFFFF000) >> 2) | 0x1 | (perm << 1);
+        uint64 tpte = (curpa & 0x00FFFFFFFFFFF000) >> 2;
+        tpte = tpte | 0x1 | (perm << 1);
         *(uint64*)(tpa) = tpte;
    }
 }

@@ -17,12 +17,12 @@
 
 #define PA2VA_OFFSET (VM_START - PHY_START)
 
-//#include "types.h"
+#include "types.h"
 //typedef unsigned long uint64;
 
 #define csr_read(csr)                       \
 ({                                          \
-    register unsigned long __v;                    \
+    register uint64 __v;                    \
     asm volatile ("csrr %0, " #csr          \
                     : "=r"(__v) :           \
                     : "memory"   );         \
@@ -31,7 +31,7 @@
 
 #define csr_write(csr, val)                         \
 ({                                                  \
-    unsigned long __v = (unsigned long)(val);                     \
+    uint64 __v = (uint64)(val);                     \
     asm volatile ("csrw " #csr ", %0"               \
                     : : "r" (__v)                   \
                     : "memory");                    \

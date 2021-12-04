@@ -93,7 +93,8 @@ void create_mapping(uint64 *pgtbl, uint64 va, uint64 pa, uint64 sz, int perm) {
 
         //printk("\nThird Page\n");
         uint64 tpa = ((spte & 0x003FFFFFFFFFFFC00) << 2) + (vpn0 << 3) + PA2VA_OFFSET;
-        uint64 tpte = ((curpa & 0x00FFFFFFFFFFF000) >> 2) | 0x1 | (perm << 1);
+        uint64 tpte = (curpa & 0x00FFFFFFFFFFF000) >> 2;
+        tpte = tpte | 0x1 | (perm << 1);
         *(uint64*)(tpa) = tpte;
    }
 }

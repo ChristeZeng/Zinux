@@ -38,6 +38,32 @@ void setup_vm(void) {
 /* swapper_pg_dir: kernel pagetable 根目录， 在 setup_vm_final 进行映射。 */
 unsigned long  swapper_pg_dir[512] __attribute__((__aligned__(0x1000)));
 
+uint64 read_piece(uint64 n, int left, int right) {
+	uint64 res;
+	res = (n << (63 - left)) >> (63 + right - left);
+	return res;
+}
+
+uint64 write_piece(uint64 n, uint64 content, int left, int right) {
+	int i;
+	// clear
+	for (i = right; i <= left; i++) {
+		n &= ~(1 << i);
+	}
+	// set
+	n |= content << right;
+	return n;
+}
+
+uint64 read_mem(uint64 *p) {
+	return (uint64)(*p);
+}
+
+void write_mem(uint64 *p, uint64 val) {
+	*p = val;
+	return;
+}
+
 /* 创建多级页表映射关系 */
 void create_mapping(uint64 *pgtbl, uint64 va, uint64 pa, uint64 sz, int perm) {
     /*
@@ -49,13 +75,11 @@ void create_mapping(uint64 *pgtbl, uint64 va, uint64 pa, uint64 sz, int perm) {
     创建多级页表的时候可以使用 kalloc() 来获取一页作为页表目录
     可以使用 V bit 来判断页表项是否存在
     */
-   //printk("\ncreate_mapping: pgtbl: %lx, va: %lx, pa: %lx, sz: %lx, perm: %d\n", pgtbl, va, pa, sz, perm);
+   printk("\ncreate_mapping: pgtbl: %lx, va: %lx, pa: %lx, sz: %lx, perm: %d\n", pgtbl, va, pa, sz, perm);
    int page_num = (page_num % 0x1000) ? ((sz >> 12) + 1) : (sz >> 12);
-   //printk("page number = %d\n", page_num);
+   printk("page number = %d\n", page_num);
    for(int i = 0; i < page_num; i++) {
-        uint64 curva = va + i * 0x1000;
-        uint64 curpa = pa + i * 0x1000;
-
+        
         //取出va + i * 0x1000的[38, 30]位作为vpn2
         uint64 vpn2 = ((va + i * 0x1000) & 0x0000007FC0000000) >> 30;
         //取出va + i * 0x1000的[29, 21]位作为vpn1
@@ -70,30 +94,52 @@ void create_mapping(uint64 *pgtbl, uint64 va, uint64 pa, uint64 sz, int perm) {
         //取出pa + i * 0x1000的[20, 12]位作为ppn0
         uint64 ppn0 = ((pa + i * 0x1000) & 0x00000000001FF000) >> 12;
 
+        uint64 curva = va + i * 0x1000;
+        uint64 curpa = pa + i * 0x1000;
+        
         //printk("\nFirst Page\n");
+        uint64 first_page_addr = (uint64)pgtbl + (vpn2 << 3);
+        
+        //printk("first_page_addr = %lx\n", first_page_addr);
+        
         uint64 fpte = *(uint64*)((uint64)pgtbl + (vpn2 << 3));
+        
+        //printk("first_page_entry = %lx\n", first_page_entry);
+
         if(!(fpte & 0x1)) {
+            //printk("first_page_entry is not exist\n");
             uint64 content = kalloc() - PA2VA_OFFSET;
-            fpte = (content & 0x00FFFFFFFFFFF000) >> 2;
-            fpte = fpte | 0x1;
+            //printk("content = %lx\n", content);
+            //printk("content = %lx\n", content >> 2);
+            fpte = (content & 0x00FFFFFFFFFFF000) >> 2;//write_piece(fpte, content >> 12, 53, 10);
+            fpte = fpte | 0x1;//write_piece(fpte, 0x1, 0, 0);
+            //printk("first_page_entry_after_kalloc = %lx\n", first_page_entry);
         }
         
         *(uint64*)((uint64)pgtbl + (vpn2 << 3)) = fpte;
+        //write_mem((uint64*)first_page_addr, fpte);
+        //printk("first_page_entry_after_write = %lx\n", read_mem((uint64*)first_page_addr));
 
         //printk("\nSecond Page\n");
-        uint64 spa = ((fpte & 0x003FFFFFFFFFFFC00) << 2) + (vpn1 << 3) + PA2VA_OFFSET;
+        uint64 spa = ((fpte & 0x003FFFFFFFFFFFC00) << 2)/*(read_piece(fpte, 53, 10) << 12)*/ + (vpn1 << 3) + PA2VA_OFFSET;
+        //printk("second_page_addr = %lx\n", second_page_addr);
         uint64 spte = *(uint64*)(spa);
+        //printk("second_page_entry = %lx\n", second_page_entry);
         if(!(spte & 0x1)) {
+            //printk("second_page_entry is not exist\n");
             uint64 content = kalloc() - PA2VA_OFFSET;
-            spte = (content & 0x00FFFFFFFFFFF000) >> 2;
-            spte = spte | 0x1;
+            //printk("content = %lx\n", content);
+            spte = (content & 0x00FFFFFFFFFFF000) >> 2;//write_piece(spte, content >> 12, 53, 10);
+            spte = spte | 0x1;//write_piece(spte, 0x1, 0, 0);
+            //printk("second_page_entry_after_kalloc = %lx\n", second_page_entry);
         }
         
         *(uint64*)(spa) = spte;
 
         //printk("\nThird Page\n");
         uint64 tpa = ((spte & 0x003FFFFFFFFFFFC00) << 2) + (vpn0 << 3) + PA2VA_OFFSET;
-        uint64 tpte = ((curpa & 0x00FFFFFFFFFFF000) >> 2) | 0x1 | (perm << 1);
+        uint64 tpte = (curpa & 0x00FFFFFFFFFFF000) >> 2;
+        tpte = tpte | 0x1 | (perm << 1);
         *(uint64*)(tpa) = tpte;
    }
 }
