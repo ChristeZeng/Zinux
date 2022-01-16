@@ -5,7 +5,6 @@
     .section .text.init
     .globl _start
 _start:  
-    la sp, boot_stack_top
     call setup_vm
     call relocate
     #set stvec = _traps
@@ -29,11 +28,11 @@ _start:
     li a7, 0
     ecall
     #set sstatus[SIE] = 1
-    # li t0, 0x2
-    # csrw sstatus, t0
+    li t0, 0x2
+    csrw sstatus, t0
 
     # ------------------
-    
+    la sp, boot_stack_top
     call mm_init
     call setup_vm_final
     call task_init

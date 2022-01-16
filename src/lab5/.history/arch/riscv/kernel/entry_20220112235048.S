@@ -33,9 +33,9 @@ kernel:
     .endr
 
     csrr t0, sepc
-    sd t0, 31 * 8(sp)
+    sd t0, 32 * 8(sp)
     csrr t0, sstatus
-    sd t0, 32 * 8(sp) 
+    sd t0, 33 * 8(sp) 
 
 call_handler:
     csrr a0, scause
@@ -43,15 +43,15 @@ call_handler:
     add a2, sp, zero
     call trap_handler
 
-    .set n, 0
+    .set n, 1
     .rept 31
         LOOPLOAD %n
         .set n, n + 1
     .endr
 
-    ld t0, 31 * 8(sp)
+    ld t0, 8(sp)
     csrw sepc, t0
-    ld t0, 32 * 8(sp) 
+    ld t0, 0(sp) 
     csrw sstatus, t0
     addi sp, sp, 264
 

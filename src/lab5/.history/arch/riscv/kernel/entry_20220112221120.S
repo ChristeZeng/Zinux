@@ -2,15 +2,28 @@
 
 .altmacro
 .macro STORE reg, n
-    sd  \reg, \n * 8(sp)
+    sd  \reg, (33 - \n) * 8(sp)
 .endm
 .macro LOOPSTORE n
     STORE x\n, \n
 .endm
 .macro LOAD reg, n
-    ld  \reg, \n * 8(sp)
+    ld  \reg, (33 - \n) * 8(sp)
 .endm
 .macro LOOPLOAD n
+    LOAD x\n, \n
+.endm
+
+.macro STORE2 reg, n
+    sd  \reg, (33 - \n) * 8(sp)
+.endm
+.macro LOOPSTORE2 n
+    STORE x\n, \n
+.endm
+.macro LOAD2 reg, n
+    ld  \reg, (33 - \n) * 8(sp)
+.endm
+.macro LOOPLOAD2 n
     LOAD x\n, \n
 .endm
 
@@ -26,16 +39,16 @@ kernel:
     # 1. save 32 registers and sepc to stack
     addi sp, sp, -264
     
-    .set n, 0
+    .set n, 1
     .rept 31
         LOOPSTORE %n
         .set n, n + 1
     .endr
 
     csrr t0, sepc
-    sd t0, 31 * 8(sp)
+    sd t0, 8(sp)
     csrr t0, sstatus
-    sd t0, 32 * 8(sp) 
+    sd t0, 0(sp) 
 
 call_handler:
     csrr a0, scause
@@ -43,15 +56,15 @@ call_handler:
     add a2, sp, zero
     call trap_handler
 
-    .set n, 0
+    .set n, 1
     .rept 31
         LOOPLOAD %n
         .set n, n + 1
     .endr
 
-    ld t0, 31 * 8(sp)
+    ld t0, 8(sp)
     csrw sepc, t0
-    ld t0, 32 * 8(sp) 
+    ld t0, 0(sp) 
     csrw sstatus, t0
     addi sp, sp, 264
 

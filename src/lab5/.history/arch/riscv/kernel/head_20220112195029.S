@@ -6,8 +6,10 @@
     .globl _start
 _start:  
     la sp, boot_stack_top
+
     call setup_vm
     call relocate
+
     #set stvec = _traps
     la t0, _traps
     csrw stvec, t0
@@ -31,13 +33,12 @@ _start:
     #set sstatus[SIE] = 1
     # li t0, 0x2
     # csrw sstatus, t0
-
-    # ------------------
     
+    call task_init
     call mm_init
     call setup_vm_final
-    call task_init
     j start_kernel
+
     # ------------------
 
     relocate:
@@ -61,6 +62,5 @@ _start:
     .globl boot_stack
 boot_stack:
     .space 0x1000 # <-- change to your stack size
-
     .globl boot_stack_top
 boot_stack_top:

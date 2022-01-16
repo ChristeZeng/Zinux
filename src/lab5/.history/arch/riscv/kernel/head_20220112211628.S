@@ -29,8 +29,8 @@ _start:
     li a7, 0
     ecall
     #set sstatus[SIE] = 1
-    # li t0, 0x2
-    # csrw sstatus, t0
+    li t0, 0x2
+    csrw sstatus, t0
 
     # ------------------
     
