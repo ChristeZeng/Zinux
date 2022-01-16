@@ -1,3 +1,3 @@
-# os21fall-stu
+# 21 OS Labs
 
-冲冲冲
+These are labs for ZJU the Operating System course given by Wenbo Shen and Yajin Zhou, which attempts to implement the most parts of Linux 0.11
