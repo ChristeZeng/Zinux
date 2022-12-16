@@ -1,7 +1,0 @@
-all : print.o
-
-print.o : print.c
-	$(GCC) $(CFLAG) -o print.o -c print.c
-
-clean :
-	$(shell rm *.o 2>/dev/null)
